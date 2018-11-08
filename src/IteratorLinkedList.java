@@ -84,12 +84,8 @@ public class IteratorLinkedList<E> implements List<E>, Iterator<E>{
 			throw new IndexOutOfBoundsException("Size: " + sizeS + ", Index: " + indexS);
 		}
 		Node<E> temp = new Node<>(element);
-		Node<E> tempNext = headStart;
 		
-		for(int i = 0; i<=index; i++) {
-			tempNext = tempNext.next();
-		}
-		if(size == 0 && index == 0) {
+		if(size == 0) {
 			add(element);
 		}
 		else if(index == size) {
@@ -98,13 +94,14 @@ public class IteratorLinkedList<E> implements List<E>, Iterator<E>{
 			tail = temp;
 			tailStart.setPrevious(tail);
 		}
-		else if(!tempNext.hasPrevious() && size > 1) {
+		else if(index == 0) {
 			temp.setNext(head);
 			head.setPrevious(temp);
 			head = temp;
 			headStart.setNext(head);
 		}
 		else {
+			Node<E> tempNext = getNode(index);
 			Node<E> tempPrev = tempNext.previous();
 			tempPrev.setNext(temp);
 			tempNext.setPrevious(temp);
@@ -153,21 +150,7 @@ public class IteratorLinkedList<E> implements List<E>, Iterator<E>{
 
 	@Override
 	public boolean contains(Object o) {
-		Node<E> tempCur = headStart;
-		while(tempCur.hasNext()) {
-			tempCur = tempCur.next();
-			if(o == null) {
-				if(tempCur.get() == null) {
-					return true;
-				}
-			}
-			else {
-				if(tempCur.get().equals(o)) {
-					return true;
-				}
-			}	
-		}
-		return false;
+		return (indexOf(o) != -1) ? true:false;
 	}
 
 	@Override
@@ -191,11 +174,7 @@ public class IteratorLinkedList<E> implements List<E>, Iterator<E>{
 			String indexS = Integer.toString(index);
 			throw new IndexOutOfBoundsException("Size: " + sizeS + ", Index: " + indexS);
 		}
-		Node<E> tempCur = headStart;
-		for(int i = 0; i <= index; i++) {
-			tempCur = tempCur.next();
-		}
-		return tempCur.get();
+		return getNode(index).get();
 	}
 
 	@Override
@@ -205,7 +184,7 @@ public class IteratorLinkedList<E> implements List<E>, Iterator<E>{
 			if(o == null && e== null) {
 				return i;
 			}
-			else if(o != null && e.equals(o)) {
+			else if(o != null && e!=null && e.equals(o)) {
 				return i;
 			}
 			i++;
@@ -227,14 +206,12 @@ public class IteratorLinkedList<E> implements List<E>, Iterator<E>{
 	@Override
 	public int lastIndexOf(Object o) {
 		int i = size -1;
-		for(E e: this) {
-			if(o==null && e==null) {
-				return i;
-			}
-			else if(o!= null && e.equals(o)) {
-				return i;
-			}
+		Node<E> tempCur = tail;
+		while(i >= 0) {
+			if(o==null && tempCur.get() == null) return i;
+			else if(o!=null && tempCur.get() != null && tempCur.get().equals(o)) return i;
 			i--;
+			tempCur = tempCur.previous();
 		}
 		return -1;
 	}
@@ -261,7 +238,7 @@ public class IteratorLinkedList<E> implements List<E>, Iterator<E>{
 				remove();
 				return true;
 			}
-			else if(o != null && e.equals(o)){
+			else if(o != null && e!=null && e.equals(o)){
 				remove();
 				return true;
 			}
@@ -281,7 +258,7 @@ public class IteratorLinkedList<E> implements List<E>, Iterator<E>{
 	}
 	
 	/**
-	 * Used by this class to cleanly remove a node. 
+	 * Used to cleanly remove a node. 
 	 * @param node - the node to be removed
 	 */
 	private void removeNode(Node<E> node) {
@@ -319,12 +296,10 @@ public class IteratorLinkedList<E> implements List<E>, Iterator<E>{
 			String indexS = Integer.toString(index);
 			throw new IndexOutOfBoundsException("Size: " + sizeS + ", Index: " + indexS);
 		}
-		Node<E> tempCur = headStart;
-		for(int i =0; i<=index; i++) {
-			tempCur = tempCur.next();
-		}
+		Node<E> tempCur = getNode(index);
+		E e = tempCur.get();
 		removeNode(tempCur);
-		return tempCur.get();
+		return e;
 	}
 	
 	/**
@@ -341,7 +316,7 @@ public class IteratorLinkedList<E> implements List<E>, Iterator<E>{
 				remove();
 				contains = true;
 			}
-			else if(o != null && e.equals(o)) {
+			else if(o != null && e!=null && e.equals(o)) {
 				remove();
 				contains = true;
 			}
@@ -381,10 +356,7 @@ public class IteratorLinkedList<E> implements List<E>, Iterator<E>{
 			String indexS = Integer.toString(index);
 			throw new IndexOutOfBoundsException("Size: " + sizeS + ", Index: " + indexS);
 		}
-		Node<E> tempCur = headStart;
-		for(int i =0; i<=index;i++) {
-			tempCur = tempCur.next();
-		}
+		Node<E> tempCur = getNode(index);
 		E tempE = tempCur.get();
 		tempCur.set(element);
 		return tempE;
@@ -470,14 +442,17 @@ public class IteratorLinkedList<E> implements List<E>, Iterator<E>{
 	}
 	
 	/**
-	 * Retrieves the node at the index. Used by the ListIterator.
+	 * Retrieves the node at the index.
 	 * @param index - the index of where the node is
 	 * @return A Node<E> at the index
 	 */
 	private Node<E> getNode(int index){
-		Node<E> tempCur = headStart;
-		for(int i = 0; i<=index; i++) {
-			tempCur = tempCur.next();
+		int count = (index - 0 < size -1 - index)? 0:size-1;
+		Node<E> tempCur = (count == 0) ? head:tail;
+		int minus = (count == 0) ? 1:-1;
+		while(count!=index) {
+			tempCur = (minus == 1) ? tempCur.next() : tempCur.previous();
+			count += minus;
 		}
 		return tempCur;
 	}
