@@ -1,7 +1,7 @@
 # CustomDataStructures
 
 ----
-IteratorLinkedList (requires Node.java)
+IteratorLinkedList
 
 A LinkedList that also works as an Iterator. The purpose was to create a data structure that could move between previous and next elements with ease. ListIterator does provide this function, but it does not support concurrent modification. So, that means a new ListIterator would need to created every time my List was updated. 
 
@@ -29,3 +29,7 @@ Previous and Next Elements
   - Can move the 'current' node to before the head (first), after the tail (last), or to an index of your choosing.
 
 ----
+
+Stack
+
+Works as a proper stack should. Created because the Stack in the official JDK is deprecated and (and extends Vector for whatever reason).
