@@ -1,8 +1,11 @@
+package IteratorList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
+
+import Node.Node;
 
 /**
  * This class is used as both a LinkedList and an Iterator. The reason for this is to allow
@@ -10,16 +13,15 @@ import java.util.NoSuchElementException;
  * an Iterator or ListIterator each time the list has been modified. In addition, it allows for
  * concurrent modification, such as removing elements while in an enhanced for-loop.
  * 
- * It also works like a ListIterator as well, with it being able to go backwards
- * and forwards, add, and remove with ease.
+ * <p>This class can almost acts as a ListIterator, with the ability to move between previous and
+ * next elements and modifying the list during the moves. Unlike an Iterator, the list can be 
+ * modified whenever during an enhanced for-loop and the for-loop will still work.
  * 
- * This does cannot implement ListIterator because List and ListIterator have conflicting
- * {@code add(Object o} statements. They both have the same parameters, but different return types.
- * So, I could only implement Iterator and put in ListIterator methods.
+ * <p>For example, {@code for(Integer i: list){if(i==2){list.remove();}}} will work
  * @author Ziwei Wu
- * @param <E> - Any Object
+ * @param <E> - The type of element the list will contain.
  */
-public class IteratorLinkedList<E> implements List<E>, Iterator<E>{
+public class IteratorLinkedList<E> implements IteratorList<E>{
 	private int size = 0;
 	private Node<E> current, head, tail, 
 		headStart = new Node<E>(null), tailStart = new Node<E>(null);
@@ -28,26 +30,17 @@ public class IteratorLinkedList<E> implements List<E>, Iterator<E>{
 		current = headStart;
 	}
 	
-	/**
-	 * Puts the 'current' node right before the head (first) node
-	 * To get the first element, call {@code next()}
-	 */
+	@Override
 	public void headStart() {
 		current = headStart;
 	}
 	
-	/**
-	 * Puts the 'current' node right after the tail (last) node
-	 * To get the last element, call {@code previous()}
-	 */
+	@Override
 	public void tailStart() {
 		current = tailStart;
 	}
 	
-	/**
-	 * Moves the 'current' node to the index.
-	 * @param index - the index the current node will move to
-	 */
+	@Override
 	public void moveToIndex(int index) {
 		if(index < 0 || index >= size) {
 			String sizeS = Integer.toString(size);
@@ -113,6 +106,7 @@ public class IteratorLinkedList<E> implements List<E>, Iterator<E>{
 
 	@Override
 	public boolean addAll(Collection<? extends E> c) {
+		if(c == null) throw new NullPointerException();
 		for(E e: c) {
 			add(e);
 		}
@@ -121,6 +115,7 @@ public class IteratorLinkedList<E> implements List<E>, Iterator<E>{
 
 	@Override
 	public boolean addAll(int index, Collection<? extends E> c) {
+		if(c == null) throw new NullPointerException();
 		if (index < 0 || index > size) {
 			String sizeS = Integer.toString(size);
 			String indexS = Integer.toString(index);
@@ -155,6 +150,7 @@ public class IteratorLinkedList<E> implements List<E>, Iterator<E>{
 
 	@Override
 	public boolean containsAll(Collection<?> c) {
+		if(c==null) throw new NullPointerException();
 		boolean contain = true;
 		Iterator<?> it = c.iterator();
 		while(it.hasNext()) {
@@ -302,13 +298,7 @@ public class IteratorLinkedList<E> implements List<E>, Iterator<E>{
 		return e;
 	}
 	
-	/**
-	 * Removes all instances of the object that is passed in from this list.
-	 * Created because {@code remove(Object o)} only removes the first instance
-	 * of the object.
-	 * @param o - the object to be removed
-	 * @return true if this list contained the object
-	 */
+	@Override
 	public boolean removeAllInstances(Object o) {
 		boolean contains = false;
 		for(E e: this) {
@@ -326,6 +316,7 @@ public class IteratorLinkedList<E> implements List<E>, Iterator<E>{
 	
 	@Override
 	public boolean removeAll(Collection<?> c) {
+		if(c == null) throw new NullPointerException();
 		boolean changed = false;
 		Iterator<?> it = c.iterator();
 		while(it.hasNext()) {
@@ -339,6 +330,7 @@ public class IteratorLinkedList<E> implements List<E>, Iterator<E>{
 
 	@Override
 	public boolean retainAll(Collection<?> c) {
+		if(c == null) throw new NullPointerException();
 		boolean changed = false;
 		for(E e: this) {
 			if(!c.contains(e)) {
@@ -424,18 +416,12 @@ public class IteratorLinkedList<E> implements List<E>, Iterator<E>{
 		return current.get();
 	}
 	
-	/**
-	 * Returns true if the current node has a previous node.
-	 * @return true if there is a previous node
-	 */
+	@Override
 	public boolean hasPrevious() {
 		return current.hasPrevious();
 	}
 	
-	/**
-	 * Returns the element that is in the previous node.
-	 * @return the previous node's element
-	 */
+	@Override
 	public E previous() {
 		current = current.previous();
 		return current.get();

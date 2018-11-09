@@ -1,3 +1,4 @@
+package Node;
 
 public class Node<E> {
 	private E element;
