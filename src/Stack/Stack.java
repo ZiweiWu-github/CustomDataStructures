@@ -45,20 +45,38 @@ public interface Stack<E> {
 	public int size();
 	
 	/**
-	 * Pushes all of the elements from the collection into the stack. The first element of
-	 * the collection will be pushed first.
+	 * Pushes all of the elements from the collection into the stack starting from the first element
+	 * of the Collection.
 	 * @param c - Collection containing elements to be pushed onto the stack.
-	 * @throws ClassCastException if the class of an element of the specified collection prevents it
-	 * 	from being pushed to this stack
-	 * @throws NullPointerException if the specified collection contains one or more null elements
-	 * 	and this stack does not permit null elements, or if the specified collection is null
-	 * @throws IllegalArgumentException if some property of an element of the specified collection 
-	 * 	prevents it from being added to this stack
 	 */
 	public void pushAll(Collection<? extends E> c);
 
 	/**
+	 * Pushes all of the elements from the collection into the stack starting from the last element
+	 * of the Collection.
+	 * @param c
+	 */
+	public void pushAllReverse(Collection<? extends E> c);
+	
+	/**
 	 * Completely clears the stack
 	 */
 	public void clear();
+	
+	/**
+	 * Returns the stack as an array. Note: the last element pushed will be the first element.
+	 * @return An Object array containing the elements of the stack
+	 */
+	public Object[] toArray();
+	
+	/**
+	 * Returns the stack as an array of Type T. Note: the last element pushed will be the 
+	 * first element.
+	 * <p>If the array is too small, then a new array will be created with the proper size.
+	 * <p>If the array is bigger than the amount of elements this stack contains, then the 
+	 * element immediately following the last element will be null.
+	 * @param a - an Array of Type T.
+	 * @return An array of type T containing the elements of the stack
+	 */
+	public <T>T[] toArray(T[] a);
 }

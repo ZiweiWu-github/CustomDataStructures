@@ -73,4 +73,51 @@ public class LinkedStack<E> implements Stack<E>{
 		size = 0;
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public void pushAllReverse(Collection<? extends E> c) {
+		Object[] arr = c.toArray();
+		for(int i = arr.length -1; i>=0; i--) {
+			push((E) arr[i]);
+		}
+		
+	}
+
+	@Override
+	public Object[] toArray() {
+		Object[] arr = new Object[size];
+		Node<E> temp = new Node<E>(null);
+		temp.setPrevious(last);
+		Node<E> clear = temp;
+		int i = 0;
+		while(temp.hasPrevious()) {
+			temp = temp.previous();
+			arr[i++] = temp.get();
+		}
+		clear.clear();
+		return arr;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T> T[] toArray(T[] a) {
+		if(a == null) throw new NullPointerException();
+		if(a.length < size) {
+			a = (T[]) java.lang.reflect.Array.newInstance(a.getClass().getComponentType(), size);
+		}
+		if(a.length > size) {
+			a[size] = null;
+		}
+		Node<E> temp = new Node<E>(null);
+		temp.setPrevious(last);
+		Node<E> clear = temp;
+		int i =0;
+		while(temp.hasPrevious()) {
+			temp = temp.previous();
+			a[i++] = (T) temp.get();
+		}
+		clear.clear();
+		return a;
+	}
+
 }

@@ -151,16 +151,10 @@ public class IteratorLinkedList<E> implements IteratorList<E>{
 	@Override
 	public boolean containsAll(Collection<?> c) {
 		if(c==null) throw new NullPointerException();
-		boolean contain = true;
-		Iterator<?> it = c.iterator();
-		while(it.hasNext()) {
-			Object o = it.next();
-			contain = contains(o);
-			if(contain == false) {
-				break;
-			}
+		for(Object o: c) {
+			if(!contains(o)) return false;
 		}
-		return contain;
+		return true;
 	}
 
 	@Override
@@ -177,12 +171,8 @@ public class IteratorLinkedList<E> implements IteratorList<E>{
 	public int indexOf(Object o) {
 		int i = 0;
 		for(E e: this) {
-			if(o == null && e== null) {
-				return i;
-			}
-			else if(o != null && e!=null && e.equals(o)) {
-				return i;
-			}
+			boolean equals = (o == null)? e == null : e != null && e.equals(o);
+			if(equals) return i;
 			i++;
 		}
 		return -1;
@@ -204,8 +194,9 @@ public class IteratorLinkedList<E> implements IteratorList<E>{
 		int i = size -1;
 		Node<E> tempCur = tail;
 		while(i >= 0) {
-			if(o==null && tempCur.get() == null) return i;
-			else if(o!=null && tempCur.get() != null && tempCur.get().equals(o)) return i;
+			E e = tempCur.get();
+			boolean equals = (o == null)? e == null : e != null && e.equals(o);
+			if(equals) return i;
 			i--;
 			tempCur = tempCur.previous();
 		}
@@ -230,11 +221,8 @@ public class IteratorLinkedList<E> implements IteratorList<E>{
 	@Override
 	public boolean remove(Object o) {
 		for(E e: this) {
-			if(o == null && e==null) {
-				remove();
-				return true;
-			}
-			else if(o != null && e!=null && e.equals(o)){
+			boolean equals = (o == null)? e==null : e!=null && e.equals(o);
+			if(equals) {
 				remove();
 				return true;
 			}
@@ -302,11 +290,8 @@ public class IteratorLinkedList<E> implements IteratorList<E>{
 	public boolean removeAllInstances(Object o) {
 		boolean contains = false;
 		for(E e: this) {
-			if(o == null && e == null) {
-				remove();
-				contains = true;
-			}
-			else if(o != null && e!=null && e.equals(o)) {
+			boolean equals = (o == null)? e==null : e!=null && e.equals(o);
+			if(equals) {
 				remove();
 				contains = true;
 			}
@@ -318,9 +303,7 @@ public class IteratorLinkedList<E> implements IteratorList<E>{
 	public boolean removeAll(Collection<?> c) {
 		if(c == null) throw new NullPointerException();
 		boolean changed = false;
-		Iterator<?> it = c.iterator();
-		while(it.hasNext()) {
-			Object o = it.next();
+		for(Object o: c) {
 			if(removeAllInstances(o) && !changed) {
 				changed = true;
 			}
@@ -391,6 +374,7 @@ public class IteratorLinkedList<E> implements IteratorList<E>{
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T> T[] toArray(T[] a) {
+		if(a==null) throw new NullPointerException();
 		if(a.length < size) {
 			a = (T[])java.lang.reflect.Array.newInstance(
                     a.getClass().getComponentType(), size);
